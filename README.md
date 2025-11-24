@@ -1,28 +1,21 @@
-Dette projekt er en simpel implementering af spillet **Rock, Paper, Scissors, Spock, Lizard (RPSSL)** i C#.  
-Formålet er at vise, hvordan man kan oversætte et flowchart til C#-kode og forstå de vigtigste sprogelementer.
+README
 
----
-Spillet følger denne logik:
+Dette er mit Rock Paper Scissors Lizard Spock-projekt.
+Jeg har lavet det som en lille GUI-app i Avalonia.
 
-1. Start spillet  
-2. Spiller vælger et tegn (rock, paper, scissors, spock, lizard)  
-3. Computeren vælger et tilfældigt tegn  
-4. Tegnene sammenlignes efter RPSSL-reglerne  
-5. Vinderen af runden får 1 point  
-6. Tjek: har en spiller nået **winningScore**?  
-   - Ja → afslut og sig hvem der har vundet  
-   - Nej → gå tilbage til trin 2  
----
+Programmet bruger:
 
-1. Åbn projektet i **Rider** eller Visual Studio  
-2. Sørg for, at `Program.cs` indeholder koden  
-3. Tryk **Run**´
-4. Følg instruktionerne i konsollen og spil mod computeren  
+enum til de 5 figurer (fra lærerens hjemmeside)
 
----
-Spillets regler
-- Rock slår Scissors og Lizard  
-- Paper slår Rock og Spock  
-- Scissors slår Paper og Lizard  
-- Spock slår Rock og Scissors  
-- Lizard slår Spock og Paper  
+en Resolve-funktion, der afgør vinderen efter lærerens tabel
+
+en random agent
+
+score mellem spiller og agent
+
+Når man klikker på en af knapperne, vælger agenten også en figur, og resultat + score bliver vist i GUI’en.
+
+GUI’en og klik-funktionen har jeg selv lavet.
+Switch-delen i Resolve fik jeg hjælp til, men logikken kommer stadig fra lærerens tabel, samt lidt chatpgpt til at forstå koderne og guide, der hvor det er blevet brugt.
+
+Det hele ligger i MainWindow.axaml.cs.
