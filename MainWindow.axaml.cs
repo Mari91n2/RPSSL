@@ -1,135 +1,101 @@
 using Avalonia.Controls;
-using Avalonia.Interactivity;
 using System;
 
-namespace RPSLSGame;
-
-public partial class MainWindow : Window
+namespace AvaloniaApplication3
 {
-    private enum Symbol { Rock, Paper, Scissors, Lizard, Spock }
-    private enum RoundResult { Draw, PlayerWins, ComputerWins }
-
-    private readonly Random _rng = new();
-    private int _playerPoints = 0;
-    private int _computerPoints = 0;
-    private const int PointsToWin = 3;
-
-    private TextBlock? _txtStatus;
-    private TextBlock? _txtSummary;
-    private TextBlock? _txtScore;
-
-    public MainWindow()
+    public partial class MainWindow : Window
     {
-        InitializeComponent();
-
-        // Hent de relevante UI-elementer
-        _txtStatus = this.FindControl<TextBlock>("TxtInfo");
-        _txtSummary = this.FindControl<TextBlock>("TxtChoices");
-        _txtScore = this.FindControl<TextBlock>("TxtScore");
-
-        // Tilknyt knapper
-        HookUpButtons();
-
-        // Første visning
-        ShowWelcomeMessage();
-    }
-
-    private void HookUpButtons()
-    {
-        // Spilknapper
-        foreach (var name in new[] { "BtnRock", "BtnPaper", "BtnScissors", "BtnLizard", "BtnSpock" })
+        // enum med figurerne (krav fra opgaven på lærerens hjemmeside)
+        // her laver jeg de 5 shapes som man kan vælge i RPSSL
+        private enum Shape
         {
-            this.FindControl<Button>(name).Click += PlayerMadeChoice;
+            Rock,
+            Paper,
+            Scissors,
+            Lizard,
+            Spock
         }
 
-        // Kontrolknapper
-        this.FindControl<Button>("BtnRestart").Click += RestartGame;
-        this.FindControl<Button>("BtnExit").Click += (_, _) => Close();
-    }
-
-    private void PlayerMadeChoice(object? sender, RoutedEventArgs e)
-    {
-        if (GameIsFinished()) return;
-
-        var playerBtn = (Button)sender!;
-        var playerChoice = ConvertToSymbol(playerBtn.Content!.ToString()!);
-        var computerChoice = (Symbol)_rng.Next(Enum.GetValues(typeof(Symbol)).Length);
-
-        var outcome = DecideRoundWinner(playerChoice, computerChoice);
-        HandleRoundResult(playerChoice, computerChoice, outcome);
-    }
-
-    private static Symbol ConvertToSymbol(string text) => text.ToLower() switch
-    {
-        "rock" => Symbol.Rock,
-        "paper" => Symbol.Paper,
-        "scissors" => Symbol.Scissors,
-        "lizard" => Symbol.Lizard,
-        "spock" => Symbol.Spock,
-        _ => throw new InvalidOperationException("Ugyldigt valg fra knap.")
-    };
-
-    private RoundResult DecideRoundWinner(Symbol player, Symbol computer)
-    {
-        if (player == computer)
-            return RoundResult.Draw;
-
-        bool playerWins =
-            (player == Symbol.Rock && (computer == Symbol.Scissors || computer == Symbol.Lizard)) ||
-            (player == Symbol.Paper && (computer == Symbol.Rock || computer == Symbol.Spock)) ||
-            (player == Symbol.Scissors && (computer == Symbol.Paper || computer == Symbol.Lizard)) ||
-            (player == Symbol.Lizard && (computer == Symbol.Spock || computer == Symbol.Paper)) ||
-            (player == Symbol.Spock && (computer == Symbol.Rock || computer == Symbol.Scissors));
-
-        return playerWins ? RoundResult.PlayerWins : RoundResult.ComputerWins;
-    }
-
-    private void HandleRoundResult(Symbol player, Symbol computer, RoundResult result)
-    {
-        string message;
-
-        switch (result)
+        // enum til  resultat
+        private enum RoundResult
         {
-            case RoundResult.PlayerWins:
-                _playerPoints++;
-                message = $"Du vandt runden!  {player} besejrer {computer}.";
-                break;
-
-            case RoundResult.ComputerWins:
-                _computerPoints++;
-                message = $"Computeren vinder runden  – {computer} slår {player}.";
-                break;
-
-            default:
-                message = $"Lige runde! Begge valgte {player}.";
-                break;
+            Win,
+            Lose,
+            Tie
         }
 
-        _txtStatus!.Text = message;
-        _txtSummary!.Text = $"Du: {player}  |  Computer: {computer}";
-        _txtScore!.Text = $"Stillingen: Du {_playerPoints} - {_computerPoints} Computer";
+        // variabler
+        private Random rnd = new Random();
+        private int humanScore = 0;
+        private int agentScore = 0;
 
-        if (GameIsFinished())
+        public MainWindow()
         {
-            _txtStatus.Text = _playerPoints > _computerPoints
-                ? "Tillykke, du vandt hele spillet! 🏆"
-                : "Computeren tog sejren denne gang. Prøv igen!";
+            InitializeComponent();
         }
-    }
 
-    private bool GameIsFinished() => _playerPoints >= PointsToWin || _computerPoints >= PointsToWin;
+        // når man klikker på en af knapperne
+        private void OnPlayerClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            // knap-teksten er figuren
+            string valg = (sender as Button)!.Content!.ToString()!;
+            Shape human = Enum.Parse<Shape>(valg);
 
-    private void RestartGame(object? sender, RoutedEventArgs e)
-    {
-        _playerPoints = 0;
-        _computerPoints = 0;
-        ShowWelcomeMessage();
-    }
+            // agent vælger random
+            Shape agent = (Shape)rnd.Next(0, 5);
+            AgentValgText.Text = $"Agent valg: {agent}";
 
-    private void ShowWelcomeMessage()
-    {
-        _txtStatus!.Text = "Vælg et symbol for at begynde spillet.";
-        _txtSummary!.Text = "Du: -  |  Computer: -";
-        _txtScore!.Text = $"Stillingen: Du {_playerPoints} - {_computerPoints} Computer";
+            // jeg kalder resolve som afgør hvem der vinder
+            RoundResult res = Resolve(human, agent);
+
+            if (res == RoundResult.Win)
+            {
+                ResultatText.Text = "Resultat: Du vandt!";
+                humanScore++;
+            }
+            else if (res == RoundResult.Lose)
+            {
+                ResultatText.Text = "Resultat: Du tabte!";
+                agentScore++;
+            }
+            else
+            {
+                ResultatText.Text = "Resultat: Uafgjort.";
+            }
+
+            ScoreText.Text = $"Stilling: Dig {humanScore} - Agent {agentScore}";
+        }
+        // funktion der afgør hvem der vinder runden
+        // logikken her kommer FRA lærerens hjemmeside:
+        // han giver tabellen: p2 - p1 = (-4, -2, 1, 3) betyder p1 vinder
+        // resten betyder p1 taber
+        //
+        // selve opsætningen af funktionen har jeg lavet, men
+        // tabel-logikken kommer fra undervisningsmaterialet
+        private RoundResult Resolve(Shape p1, Shape p2)
+        {
+            if (p1 == p2)
+                return RoundResult.Tie;
+            
+            // regner forskel mellem figurer (fra lærerens RPSSL tabel)
+
+
+            int diff = (int)p2 - (int)p1;
+ 
+            // her bruger jeg tabelværdierne
+            // dette er det eneste sted der var lidt svært, så dette lavede jeg med hjælp fra ChatGPT
+            switch (diff)
+            {
+                case -4:
+                case -2:
+                case 1:
+                case 3:
+                    return RoundResult.Win;
+
+                default:
+                    return RoundResult.Lose;
+            }
+        }
     }
 }
+
