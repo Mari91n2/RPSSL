@@ -1,47 +1,45 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="RPSLSGame.MainWindow"
-        Title="Rock Paper Scissors Lizard Spock"
-        Width="420" Height="430"
-        CanResize="False">
+        x:Class="AvaloniaApplication3.MainWindow"
+        Width="400" Height="500"
+        Title="RPSSL Spil">
 
-    <StackPanel Margin="20" Spacing="14">
+    <StackPanel Margin="20">
 
-        <TextBlock Text="Rock · Paper · Scissors · Lizard · Spock"
-                   FontSize="22"
-                   FontWeight="Bold"
-                   HorizontalAlignment="Center"/>
+        <TextBlock Text="Rock Paper Scissors Lizard Spock"
+                   FontSize="20"
+                   HorizontalAlignment="Center"
+                   Margin="0 0 0 20"/>
 
-        <Border BorderThickness="1" BorderBrush="Gray" CornerRadius="6" Padding="10">
-            <StackPanel>
-                <TextBlock x:Name="TxtInfo"
-                           Text="Tryk på et symbol for at starte."
-                           FontSize="14"/>
-                <TextBlock x:Name="TxtChoices"
-                           Text="Du: -   |   Computer: -"
-                           FontSize="13"
-                           Margin="0,4,0,2"/>
-                <TextBlock x:Name="TxtScore"
-                           Text="Stilling → Du: 0  |  Computer: 0"
-                           FontSize="14"
-                           FontWeight="SemiBold"/>
-            </StackPanel>
-        </Border>
-
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button x:Name="BtnRock" Content="Rock" Width="80" Margin="4"/>
-            <Button x:Name="BtnPaper" Content="Paper" Width="80" Margin="4"/>
-            <Button x:Name="BtnScissors" Content="Scissors" Width="90" Margin="4"/>
+        <!--
+Jeg har kigget på lærerens RPSSL-solution for at forstå hvordan man laver knapper og tekst i Avalonia.
+Selve layoutet har jeg så bare sat sammen selv med StackPanel + knapper.
+Bare basic GUI så jeg kunne få spillet til at virke.
+-->
+        <!-- Knapper til spilleren -->
+        <StackPanel Orientation="Vertical" Spacing="10">
+            <Button Content="Rock" Click="OnPlayerClick"/>
+            <Button Content="Paper" Click="OnPlayerClick"/>
+            <Button Content="Scissors" Click="OnPlayerClick"/>
+            <Button Content="Lizard" Click="OnPlayerClick"/>
+            <Button Content="Spock" Click="OnPlayerClick"/>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button x:Name="BtnLizard" Content="Lizard" Width="80" Margin="4"/>
-            <Button x:Name="BtnSpock" Content="Spock" Width="80" Margin="4"/>
-        </StackPanel>
+        <Separator Margin="0 20 0 20"/>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,14,0,0">
-            <Button x:Name="BtnRestart" Content="Nulstil" Width="100" Margin="4"/>
-            <Button x:Name="BtnExit" Content="Luk" Width="80" Margin="4"/>
-        </StackPanel>
+        <TextBlock x:Name="AgentValgText" 
+                   Text="Agent valg: -" 
+                   FontSize="16"/>
+
+        <TextBlock x:Name="ResultatText"
+                   Text="Resultat: -" 
+                   Margin="0 10 0 0"
+                   FontSize="16"/>
+
+        <TextBlock x:Name="ScoreText"
+                   Text="Stilling: Dig 0 - Agent 0"
+                   Margin="0 20 0 0"
+                   FontSize="16"/>
+
     </StackPanel>
 </Window>
